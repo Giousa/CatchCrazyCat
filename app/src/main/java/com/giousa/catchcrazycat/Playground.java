@@ -49,6 +49,100 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
         initGame();
     }
 
+    /**
+     * 判断是否处于边界
+     * @param dot
+     * @return
+     */
+    private boolean isAtEdge(Dot dot){
+
+        if(dot.getX()*dot.getY() == 0 || dot.getX()+1 == COL || dot.getY()+1 == ROW){
+            //边界
+            return true;
+        }
+
+        return false;
+    }
+
+    private Dot getNeighbour(Dot one,int dir){
+
+        switch (dir){
+            case 1:
+                //左边的点
+                return getDot(one.getX()-1,one.getY());
+
+            case 2:
+                //左上角的点
+                if(one.getY() % 2 == 0){
+                    return getDot(one.getX()-1,one.getY()-1);
+
+                }else{
+                    return getDot(one.getX(),one.getY()-1);
+                }
+
+            case 3:
+                //右上角的点
+                if(one.getY() % 2 == 0){
+                    return getDot(one.getX(),one.getY()-1);
+
+                }else{
+                    return getDot(one.getX()+1,one.getY()-1);
+                }
+
+            case 4:
+                //右边的点
+                return getDot(one.getX()+1,one.getY());
+
+            case 5:
+                //右下角的点
+                if(one.getY() % 2 == 0){
+                    return getDot(one.getX(),one.getY()+1);
+
+                }else{
+                    return getDot(one.getX()+1,one.getY()+1);
+                }
+
+            case 6:
+                //左下角的点
+                if(one.getY() % 2 == 0){
+                    return getDot(one.getX()-1,one.getY()+1);
+
+                }else{
+                    return getDot(one.getX(),one.getY()+1);
+                }
+
+        }
+
+        return null;
+    }
+
+    private int getDistance(Dot one,int dir){
+
+        int distance = 0;
+        Dot ori = one,next;
+        while (true){
+            next = getNeighbour(ori, dir);
+            if(next.getStatus() == Dot.STATUS_ON){
+                return distance*(-1);
+            }
+
+            if(isAtEdge(next)){
+                distance++;
+                return distance;
+            }
+
+            distance++;
+            ori = next;
+        }
+
+    }
+
+    private void moveTo(Dot one){
+        one.setStatus(Dot.STATUS_IN);
+        getDot(cat.getX(),cat.getY());
+        cat.setXY(one.getX(),one.getY());
+    }
+
     private Dot getDot(int x,int y){
 
         return matrix[y][x];
