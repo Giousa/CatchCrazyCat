@@ -6,8 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 /**
  * Description:
@@ -16,7 +18,7 @@ import android.view.SurfaceView;
  * Time:上午9:03
  */
 
-public class Playground extends SurfaceView {
+public class Playground extends SurfaceView implements View.OnTouchListener{
 
     private static int WIDTH = 40;//宽度
     private static final int COL = 10;//行数
@@ -43,6 +45,7 @@ public class Playground extends SurfaceView {
             }
         }
 
+        setOnTouchListener(this);
         initGame();
     }
 
@@ -134,5 +137,46 @@ public class Playground extends SurfaceView {
                 System.out.println("Block = "+i);
             }
         }
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        switch (motionEvent.getAction()){
+
+            case MotionEvent.ACTION_DOWN:
+//                System.out.println("DOWN x = "+motionEvent.getX()+"  y="+motionEvent.getY());
+                int x,y;
+                y = (int)(motionEvent.getY()/WIDTH);
+//                System.out.println("onTouch y = "+y);
+                if(y%2 == 0){
+                    //奇数行
+                    x = (int) (motionEvent.getX()/WIDTH);
+//                    System.out.println("onTocuh x = "+x);
+                }else{
+                    //偶数行
+                    x = (int) ((motionEvent.getX() - WIDTH/2)/WIDTH);
+                }
+
+                if(x+1 > COL || y+1 > ROW){
+                    //超出区域,不能点击,重新初始化
+                    initGame();
+                }else{
+                    getDot(x,y).setStatus(Dot.STATUS_ON);
+                }
+                readRaw();//不要忘记调用此方法,否则无法更改到主界面
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+//                System.out.println("MOVE");
+                break;
+
+            case MotionEvent.ACTION_UP:
+//                System.out.println("UP");
+                break;
+
+        }
+
+        return true;
     }
 }
