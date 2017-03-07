@@ -16,6 +16,12 @@ import android.view.SurfaceView;
 
 public class Playground extends SurfaceView {
 
+    private static final int COL = 10;//行数
+    private static final int ROW = 10;//列数
+    private static final int BLOCKS = 10;//默认添加的路障数量
+    private Dot matrix[][];
+    private Dot cat;
+
     public Playground(Context context) {
         this(context,null);
     }
@@ -27,6 +33,19 @@ public class Playground extends SurfaceView {
     public Playground(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getHolder().addCallback(mCallback);//将callback对象指定给getHodler
+        matrix = new Dot[ROW][COL];
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                matrix[i][j] = new Dot(j,i);
+            }
+        }
+
+        initGame();
+    }
+
+    private Dot getDot(int x,int y){
+
+        return matrix[y][x];
     }
 
 
@@ -56,4 +75,27 @@ public class Playground extends SurfaceView {
 
         }
     };
+
+    private void initGame(){
+
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                matrix[i][j].setStatus(Dot.STATUS_OFF);
+            }
+        }
+
+        cat = new Dot(4,5);
+        getDot(4,5).setStatus(Dot.STATUS_IN);
+        for (int i = 0; i < BLOCKS;) {
+
+            int x = (int) ((Math.random() * 1000)%COL);
+            int y = (int) ((Math.random() * 1000)%ROW);
+            System.out.println("x = "+x+" y = "+y );
+            if(getDot(x,y).getStatus() == Dot.STATUS_OFF){
+                getDot(x,y).setStatus(Dot.STATUS_ON);
+                i++;
+                System.out.println("Block = "+i);
+            }
+        }
+    }
 }
