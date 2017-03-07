@@ -18,7 +18,7 @@ import android.view.SurfaceView;
 
 public class Playground extends SurfaceView {
 
-    private static final int WIDTH = 100;//宽度
+    private static int WIDTH = 40;//宽度
     private static final int COL = 10;//行数
     private static final int ROW = 10;//列数
     private static final int BLOCKS = 10;//默认添加的路障数量
@@ -58,6 +58,7 @@ public class Playground extends SurfaceView {
         Canvas canvas = getHolder().lockCanvas();
         canvas.drawColor(Color.LTGRAY);//浅灰色
         Paint paint = new Paint();
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         for (int i = 0; i < COL; i++) {
 
             int offset = 0;
@@ -95,11 +96,14 @@ public class Playground extends SurfaceView {
 
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
+            readRaw();
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+            System.out.println("i = "+i+"  i1 = "+i1+" i2 = "+i2);
+            //适配屏幕
+            WIDTH = i1/(COL+1);
             readRaw();
         }
 
