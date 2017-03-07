@@ -10,6 +10,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.Vector;
 
 /**
  * Description:
@@ -23,7 +26,7 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
     private static int WIDTH = 40;//宽度
     private static final int COL = 10;//行数
     private static final int ROW = 10;//列数
-    private static final int BLOCKS = 10;//默认添加的路障数量
+    private static final int BLOCKS = 20;//默认添加的路障数量
     private Dot matrix[][];
     private Dot cat;
 
@@ -139,8 +142,39 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
 
     private void moveTo(Dot one){
         one.setStatus(Dot.STATUS_IN);
-        getDot(cat.getX(),cat.getY());
+        getDot(cat.getX(),cat.getY()).setStatus(Dot.STATUS_OFF);
         cat.setXY(one.getX(),one.getY());
+    }
+
+    private void move(){
+        if(isAtEdge(cat)){
+            lose();
+            return;
+        }
+
+        Vector<Dot> avaliable = new Vector<>();
+        for (int i = 1; i < 7; i++) {
+            Dot n = getNeighbour(cat, i);
+            if(n.getStatus() == Dot.STATUS_OFF){
+                avaliable.add(n);
+            }
+        }
+
+        if(avaliable.size() == 0){
+            win();
+        }else{
+            moveTo(avaliable.get(0));
+        }
+    }
+
+    private void lose(){
+        Toast.makeText(getContext(),"--Lose--",Toast.LENGTH_SHORT).show();
+        System.out.println("---lose---");
+    }
+
+    private void win(){
+        Toast.makeText(getContext(),"--Win--",Toast.LENGTH_SHORT).show();
+        System.out.println("---win---");
     }
 
     private Dot getDot(int x,int y){
@@ -255,8 +289,10 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
                 if(x+1 > COL || y+1 > ROW){
                     //超出区域,不能点击,重新初始化
                     initGame();
-                }else{
+                }else if(getDot(x,y).getStatus() == Dot.STATUS_OFF){
                     getDot(x,y).setStatus(Dot.STATUS_ON);
+                    move();
+
                 }
                 readRaw();//不要忘记调用此方法,否则无法更改到主界面
                 break;
