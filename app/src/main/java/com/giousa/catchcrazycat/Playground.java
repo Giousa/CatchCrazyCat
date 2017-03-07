@@ -3,6 +3,8 @@ package com.giousa.catchcrazycat;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +18,7 @@ import android.view.SurfaceView;
 
 public class Playground extends SurfaceView {
 
+    private static final int WIDTH = 100;//宽度
     private static final int COL = 10;//行数
     private static final int ROW = 10;//列数
     private static final int BLOCKS = 10;//默认添加的路障数量
@@ -49,11 +52,41 @@ public class Playground extends SurfaceView {
     }
 
 
-    private void redRaw(){
+    private void readRaw(){
 
         //在canvas里面可以绘制
         Canvas canvas = getHolder().lockCanvas();
-        canvas.drawColor(Color.CYAN);
+        canvas.drawColor(Color.LTGRAY);//浅灰色
+        Paint paint = new Paint();
+        for (int i = 0; i < COL; i++) {
+
+            int offset = 0;
+            if(i % 2 != 0){
+                //偶数行
+                offset = WIDTH/2;
+            }
+
+            for (int j = 0; j < ROW; j++) {
+                Dot one = getDot(j, i);
+                switch (one.getStatus()){
+                    case Dot.STATUS_OFF:
+                        paint.setColor(0xffeeeeee);
+                        break;
+
+                    case Dot.STATUS_ON:
+                        paint.setColor(0xffffaa00);
+                        break;
+
+                    case Dot.STATUS_IN:
+                        paint.setColor(0xffff0000);//红色
+                        break;
+                }
+
+                canvas.drawOval(new RectF(one.getX()*WIDTH+offset,one.getY()*WIDTH,
+                        (one.getX()+1)*WIDTH+offset,(one.getY()+1)*WIDTH),paint);
+            }
+        }
+        
         getHolder().unlockCanvasAndPost(canvas);//取消canvas的锁定并将绘图内容更新到界面
 
     }
@@ -67,7 +100,7 @@ public class Playground extends SurfaceView {
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-            redRaw();
+            readRaw();
         }
 
         @Override
