@@ -26,7 +26,7 @@ public class Playground extends SurfaceView {
 
     public Playground(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        getHolder().addCallback(mCallback);//将callback对象指定给getHodler
     }
 
 
@@ -43,12 +43,12 @@ public class Playground extends SurfaceView {
 
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
-            
+
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
+            redRaw();
         }
 
         @Override
