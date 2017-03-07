@@ -12,6 +12,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -26,7 +27,7 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
     private static int WIDTH = 40;//宽度
     private static final int COL = 10;//行数
     private static final int ROW = 10;//列数
-    private static final int BLOCKS = 20;//默认添加的路障数量
+    private static final int BLOCKS = 15;//默认添加的路障数量
     private Dot matrix[][];
     private Dot cat;
 
@@ -122,6 +123,11 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
     private int getDistance(Dot one,int dir){
 
         int distance = 0;
+
+        if(isAtEdge(one)){
+            return 1;
+        }
+
         Dot ori = one,next;
         while (true){
             next = getNeighbour(ori, dir);
@@ -153,17 +159,53 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
         }
 
         Vector<Dot> avaliable = new Vector<>();
+        Vector<Dot> positive = new Vector<>();
+        HashMap<Dot,Integer> al = new HashMap<>();
         for (int i = 1; i < 7; i++) {
             Dot n = getNeighbour(cat, i);
             if(n.getStatus() == Dot.STATUS_OFF){
                 avaliable.add(n);
+                al.put(n,i);
+                if(getDistance(n,i) > 0){
+                    positive.add(n);
+                }
             }
         }
 
         if(avaliable.size() == 0){
             win();
-        }else{
+        }else if(avaliable.size() == 1){
             moveTo(avaliable.get(0));
+        }else{
+
+            Dot best = null;
+
+            if(positive.size() != 0){
+                //存在可以直接到达边缘的走向
+                System.out.println("向前进");
+                int min = 999;
+                for (int i = 0; i < positive.size(); i++) {
+                    int a = getDistance(positive.get(i), al.get(positive.get(i)));
+                    if(a < min){
+                        min = a;
+                        best = positive.get(i);
+                    }
+                }
+                moveTo(best);
+
+            }else{
+                //所有方向都有路障
+                System.out.println("躲避障碍");
+                int max = 0;
+                for (int i = 0; i < avaliable.size(); i++) {
+                    int k = getDistance(avaliable.get(i),al.get(avaliable.get(i)));
+                    if(k < max){
+                        max = k;
+                        best = avaliable.get(i);
+                    }
+                }
+                moveTo(best);
+            }
         }
     }
 
@@ -265,6 +307,7 @@ public class Playground extends SurfaceView implements View.OnTouchListener{
                 System.out.println("Block = "+i);
             }
         }
+
     }
 
     @Override
